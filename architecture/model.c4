@@ -21,76 +21,31 @@ model {
       }
     }
     customers_service = service 'customers-service' {  // docker-compose.yml:35
-      technology 'Java · Spring Boot · REST'
+      technology 'Java · Spring Boot · REST · HSQLDB (embedded)'
       metadata {
         code 'spring-petclinic-customers-service/**'
         otel_service 'customers-service'
         resource 'customers-service'
       }
-      config = component 'config' {
-        metadata {
-          code 'spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/config/**'
-        }
-      }
-      model = component 'model' {
-        metadata {
-          code 'spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/model/**'
-        }
-      }
-      web = component 'web' {
-        metadata {
-          code 'spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/**'
-        }
-      }
     }
     visits_service = service 'visits-service' {  // docker-compose.yml:50
-      technology 'Java · Spring Boot · REST'
+      technology 'Java · Spring Boot · REST · HSQLDB (embedded)'
       metadata {
         code 'spring-petclinic-visits-service/**'
         otel_service 'visits-service'
         resource 'visits-service'
       }
-      config_2 = component 'config' {
-        metadata {
-          code 'spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/config/**'
-        }
-      }
-      model_3 = component 'model' {
-        metadata {
-          code 'spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/model/**'
-        }
-      }
-      web_3 = component 'web' {
-        metadata {
-          code 'spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/web/**'
-        }
-      }
     }
     vets_service = service 'vets-service' {  // docker-compose.yml:65
-      technology 'Java · Spring Boot · REST'
+      technology 'Java · Spring Boot · REST · HSQLDB (embedded)'
       metadata {
         code 'spring-petclinic-vets-service/**'
         otel_service 'vets-service'
         resource 'vets-service'
       }
-      model_2 = component 'model' {
-        metadata {
-          code 'spring-petclinic-vets-service/src/main/java/org/springframework/samples/petclinic/vets/model/**'
-        }
-      }
-      system_2 = component 'system' {
-        metadata {
-          code 'spring-petclinic-vets-service/src/main/java/org/springframework/samples/petclinic/vets/system/**'
-        }
-      }
-      web_2 = component 'web' {
-        metadata {
-          code 'spring-petclinic-vets-service/src/main/java/org/springframework/samples/petclinic/vets/web/**'
-        }
-      }
     }
     genai_service = service 'genai-service' {  // docker-compose.yml:81
-      technology 'Java · Spring Boot · REST'
+      technology 'Java · Spring Boot · REST · HSQLDB (embedded)'
       metadata {
         code 'spring-petclinic-genai-service/**'
         otel_service 'genai-service'
@@ -103,21 +58,6 @@ model {
         code 'spring-petclinic-api-gateway/**'
         otel_service 'api-gateway'
         resource 'api-gateway'
-      }
-      application = component 'application' {
-        metadata {
-          code 'spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/**'
-        }
-      }
-      boundary = component 'boundary' {
-        metadata {
-          code 'spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/**'
-        }
-      }
-      dto = component 'dto' {
-        metadata {
-          code 'spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/dto/**'
-        }
       }
     }
     tracing_server = infra 'tracing-server' {  // docker-compose.yml:116
@@ -155,21 +95,13 @@ model {
     }
   }
 
-  application -> dto
-  boundary -> application
-  boundary -> dto
-  web -> model
   customers_service -> MySQL  // reads or writes? say which: -[reads]-> or -[writes]->
   genai_service -> MySQL  // reads or writes? say which: -[reads]-> or -[writes]->
-  web_2 -> model_2
   vets_service -> MySQL  // reads or writes? say which: -[reads]-> or -[writes]->
-  web_3 -> model_3
   visits_service -> MySQL  // reads or writes? say which: -[reads]-> or -[writes]->
-  application -[request]-> customers_service
-  application -[request]-> visits_service
-  api_gateway -[request]-> vets_service
-  api_gateway -[request]-> visits_service
   api_gateway -[request]-> customers_service
+  api_gateway -[request]-> visits_service
+  api_gateway -[request]-> vets_service
   api_gateway -[request]-> genai_service
   genai_service -[request]-> vets_service
 }
