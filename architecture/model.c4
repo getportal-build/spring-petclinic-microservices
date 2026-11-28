@@ -1,0 +1,189 @@
+// Starter spec, read from the code and traces by portal (no AI).
+// It says what exists. Add what the code can't: domains, your names,
+// rules, and what you plan to build.
+// Conventions: https://portal.haris-d21.workers.dev/skills/portal-architecture/SKILL.md
+model {
+  system = domain 'spring-petclinic-microservices' {
+    config_server = service 'config-server' {  // docker-compose.yml:2
+      technology 'Java'
+      metadata {
+        code 'spring-petclinic-config-server/**'
+        otel_service 'config-server'
+        resource 'config-server'
+      }
+    }
+    discovery_server = service 'discovery-server' {  // docker-compose.yml:17
+      technology 'Java'
+      metadata {
+        code 'spring-petclinic-discovery-server/**'
+        otel_service 'discovery-server'
+        resource 'discovery-server'
+      }
+    }
+    customers_service = service 'customers-service' {  // docker-compose.yml:35
+      technology 'Java · Spring Boot · REST'
+      metadata {
+        code 'spring-petclinic-customers-service/**'
+        otel_service 'customers-service'
+        resource 'customers-service'
+      }
+      config = component 'config' {
+        metadata {
+          code 'spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/config/**'
+        }
+      }
+      model = component 'model' {
+        metadata {
+          code 'spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/model/**'
+        }
+      }
+      web = component 'web' {
+        metadata {
+          code 'spring-petclinic-customers-service/src/main/java/org/springframework/samples/petclinic/customers/web/**'
+        }
+      }
+    }
+    visits_service = service 'visits-service' {  // docker-compose.yml:50
+      technology 'Java · Spring Boot · REST'
+      metadata {
+        code 'spring-petclinic-visits-service/**'
+        otel_service 'visits-service'
+        resource 'visits-service'
+      }
+      config_2 = component 'config' {
+        metadata {
+          code 'spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/config/**'
+        }
+      }
+      model_3 = component 'model' {
+        metadata {
+          code 'spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/model/**'
+        }
+      }
+      web_3 = component 'web' {
+        metadata {
+          code 'spring-petclinic-visits-service/src/main/java/org/springframework/samples/petclinic/visits/web/**'
+        }
+      }
+    }
+    vets_service = service 'vets-service' {  // docker-compose.yml:65
+      technology 'Java · Spring Boot · REST'
+      metadata {
+        code 'spring-petclinic-vets-service/**'
+        otel_service 'vets-service'
+        resource 'vets-service'
+      }
+      model_2 = component 'model' {
+        metadata {
+          code 'spring-petclinic-vets-service/src/main/java/org/springframework/samples/petclinic/vets/model/**'
+        }
+      }
+      system_2 = component 'system' {
+        metadata {
+          code 'spring-petclinic-vets-service/src/main/java/org/springframework/samples/petclinic/vets/system/**'
+        }
+      }
+      web_2 = component 'web' {
+        metadata {
+          code 'spring-petclinic-vets-service/src/main/java/org/springframework/samples/petclinic/vets/web/**'
+        }
+      }
+    }
+    genai_service = service 'genai-service' {  // docker-compose.yml:81
+      technology 'Java · Spring Boot · REST'
+      metadata {
+        code 'spring-petclinic-genai-service/**'
+        otel_service 'genai-service'
+        resource 'genai-service'
+      }
+    }
+    api_gateway = service 'api-gateway' {  // docker-compose.yml:101
+      technology 'Java · Spring Boot · REST'
+      metadata {
+        code 'spring-petclinic-api-gateway/**'
+        otel_service 'api-gateway'
+        resource 'api-gateway'
+      }
+      application = component 'application' {
+        metadata {
+          code 'spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/**'
+        }
+      }
+      boundary = component 'boundary' {
+        metadata {
+          code 'spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/**'
+        }
+      }
+      dto = component 'dto' {
+        metadata {
+          code 'spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/dto/**'
+        }
+      }
+    }
+    tracing_server = infra 'tracing-server' {  // docker-compose.yml:116
+      technology 'openzipkin/zipkin'
+      metadata {
+        resource 'tracing-server'
+      }
+    }
+    admin_server = service 'admin-server' {  // docker-compose.yml:126
+      technology 'Java'
+      metadata {
+        code 'spring-petclinic-admin-server/**'
+        otel_service 'admin-server'
+        resource 'admin-server'
+      }
+    }
+    grafana_server = service 'grafana-server' {  // docker-compose.yml:143
+      technology 'built from a Dockerfile'
+      metadata {
+        otel_service 'grafana-server'
+        resource 'grafana-server'
+      }
+    }
+    prometheus_server = infra 'prometheus-server' {  // docker-compose.yml:153
+      technology 'built from a Dockerfile'
+      metadata {
+        resource 'prometheus-server'
+      }
+    }
+    MySQL = datastore 'MySQL' {  // spring-petclinic-customers-service/pom.xml:65
+      technology 'MySQL'
+      metadata {
+        resource 'MySQL'
+      }
+    }
+  }
+
+  application -> dto
+  boundary -> application
+  boundary -> dto
+  web -> model
+  customers_service -> MySQL  // reads or writes? say which: -[reads]-> or -[writes]->
+  genai_service -> MySQL  // reads or writes? say which: -[reads]-> or -[writes]->
+  web_2 -> model_2
+  vets_service -> MySQL  // reads or writes? say which: -[reads]-> or -[writes]->
+  web_3 -> model_3
+  visits_service -> MySQL  // reads or writes? say which: -[reads]-> or -[writes]->
+  application -[request]-> customers_service
+  application -[request]-> visits_service
+  api_gateway -[request]-> vets_service
+  api_gateway -[request]-> visits_service
+  api_gateway -[request]-> customers_service
+  api_gateway -[request]-> genai_service
+  genai_service -[request]-> vets_service
+}
+
+specification {
+  element domain
+  element service
+  element event
+  element datastore
+  element infra
+  element component
+  relationship request
+  relationship publishes
+  relationship consumes
+  relationship reads
+  relationship writes
+}
